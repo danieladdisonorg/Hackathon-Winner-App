@@ -46,6 +46,7 @@ export default function MapRoute() {
           center: { lat: 40.7128, lng: -74.006 }, // Default to New York
           zoom: 12,
           mapTypeControl: false,
+          disableDefaultUI: true
         });
 
         setMap(mapInstance);
