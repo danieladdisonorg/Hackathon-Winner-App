@@ -41,18 +41,22 @@ export default function MapRoute() {
   const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // State to track clicked POI cards
+  const [clickedCards, setClickedCards] = useState<{ [key: string]: boolean }>({});
+
+  // State to store audio URLs per POI (using place_id as key)
+  const [audioUrls, setAudioUrls] = useState<{ [key: string]: string }>({});
+
+  // State to track if audio is loading per POI (using place_id as key)
+  const [loadingAudio, setLoadingAudio] = useState<{ [key: string]: boolean }>({});
+
   const mapRef = useRef<HTMLDivElement>(null);
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
 
   /* -------------------------------------------------------------------------- */
   /*                               useEffect Hook                               */
-  /*         Loads the Google Maps API and initializes map/services/etc.         */
   /* -------------------------------------------------------------------------- */
-
-  useEffect(() => {
-    pointsOfInterest.map(point => fetchAudio(point));
-  }, [pointsOfInterest])
 
   useEffect(() => {
     const loader = new Loader({
@@ -101,28 +105,43 @@ export default function MapRoute() {
   }, []);
 
   /* -------------------------------------------------------------------------- */
-  /*                                Helper Functions                             */
+  /*                                Helper Functions                            */
   /* -------------------------------------------------------------------------- */
 
-//replace sapce with underscore
-
+  // Replace spaces with underscores for the API
   const nameParser = (poi: any) => {
-    console.log(poi.name);
     return poi.name.split(" ").join("_");
-  }
+  };
 
-  const fetchAudio = async (place: string) => {
-    let poi = nameParser(place)
-    await fetch(`http://127.0.0.1:3100/get-location-info?place=${poi}`)
-    .then(response => response)
-    .then(data => console.log(data.json()))
-    // .then(blob => {
-    //   const audioUrl = URL.createObjectURL(blob);
-    //   const audioElement = new Audio(audioUrl);
-    //   audioElement.play();
-    // });
-  }
+  // Fetch audio for a specific place and store the audio URL for playback.
+  const fetchAudio = async (place: any) => {
+    let poiName = nameParser(place);
+    try {
+      const response = await fetch(`http://127.0.0.1:3100/get-location-audio?place=${poiName}`);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      // Save the audio URL in state for the given POI's place_id
+      setAudioUrls(prev => ({ ...prev, [place.place_id]: url }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  // Click handler for POI cards
+  const handleCardClick = async (poi: any) => {
+    // Prevent duplicate clicks if already clicked
+    if (clickedCards[poi.place_id]) return;
+
+    // Mark the card as clicked
+    setClickedCards(prev => ({ ...prev, [poi.place_id]: true }));
+    // Set the loading state for audio
+    setLoadingAudio(prev => ({ ...prev, [poi.place_id]: true }));
+
+    // Trigger the fetchAudio request which stores the URL in state
+    await fetchAudio(poi);
+    // Remove the loading flag once done
+    setLoadingAudio(prev => ({ ...prev, [poi.place_id]: false }));
+  };
 
   // Extracts a detailed list of LatLng points from the DirectionsRoute.
   function getRoutePathPoints(route: google.maps.DirectionsRoute): google.maps.LatLng[] {
@@ -176,7 +195,7 @@ export default function MapRoute() {
         const request: google.maps.places.PlaceSearchRequest = {
           location: point,
           radius: 2000, // 2km radius
-          type: "tourist_attraction", // or any other type
+          type: "tourist_attraction",
         };
 
         placesService.nearbySearch(request, (results, status) => {
@@ -205,9 +224,9 @@ export default function MapRoute() {
                   map,
                   title: place.name,
                   icon: {
-                    url: place.icon ?? "", // Fallback to empty if undefined
+                    url: place.icon ?? "",
                     scaledSize: new google.maps.Size(24, 24),
-                  },                  
+                  },
                 });
 
                 // Info window
@@ -236,15 +255,16 @@ export default function MapRoute() {
 
   // Calculates a walking route between Start and End inputs, then finds POIs.
   function calculateRoute() {
-    // Ensure we have everything needed
     if (!directionsService || !directionsRenderer || !placesService) return;
     if (!startInputRef.current || !endInputRef.current) return;
 
-    // Reset loading & data
     setIsLoading(true);
     markers.forEach((marker) => marker.setMap(null));
     setMarkers([]);
     setPointsOfInterest([]);
+    setClickedCards({}); // Reset clicked state
+    setAudioUrls({}); // Reset audio URLs
+    setLoadingAudio({}); // Reset loading audio state
 
     const startValue = startInputRef.current.value;
     const endValue = endInputRef.current.value;
@@ -255,7 +275,6 @@ export default function MapRoute() {
       return;
     }
 
-    // Request route
     directionsService.route(
       {
         origin: startValue,
@@ -276,7 +295,7 @@ export default function MapRoute() {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                                   Render                                    */
+  /*                                   Render                                   */
   /* -------------------------------------------------------------------------- */
 
   return (
@@ -345,7 +364,13 @@ export default function MapRoute() {
           ) : pointsOfInterest.length > 0 ? (
             <div className="space-y-3">
               {pointsOfInterest.map((poi, index) => (
-                <Card key={poi.place_id || index} className="overflow-hidden">
+                <Card
+                  key={poi.place_id || index}
+                  onClick={() => handleCardClick(poi)}
+                  className={`overflow-hidden cursor-pointer ${
+                    clickedCards[poi.place_id] ? "bg-gray-100" : ""
+                  }`}
+                >
                   <CardContent className="p-3">
                     <div>
                       <h3 className="font-medium">{poi.name}</h3>
@@ -369,6 +394,30 @@ export default function MapRoute() {
                           <span className="ml-1 text-xs text-muted-foreground">
                             {poi.rating} ({poi.user_ratings_total || 0})
                           </span>
+                        </div>
+                      )}
+
+                      {/* Render loading indicator or Play Audio button */}
+                      {clickedCards[poi.place_id] && loadingAudio[poi.place_id] && (
+                        <div className="mt-2">
+                          <Button size="sm" disabled>
+                            Loading Audio...
+                          </Button>
+                        </div>
+                      )}
+                      {clickedCards[poi.place_id] && !loadingAudio[poi.place_id] && audioUrls[poi.place_id] && (
+                        <div className="mt-2">
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              // Prevent the card click from triggering again
+                              e.stopPropagation();
+                              const audio = new Audio(audioUrls[poi.place_id]);
+                              audio.play();
+                            }}
+                          >
+                            Play Audio
+                          </Button>
                         </div>
                       )}
                     </div>
