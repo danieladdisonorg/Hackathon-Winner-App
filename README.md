@@ -21,12 +21,26 @@ The Route Planner Frontend is a web application that enables users to calculate 
 - **State Management:** (Specify if using Context API, Redux, or other state management libraries)
 - **API Integration:** Communication with the backend Flask API
 
+## Demo
+
+1. Add the start and end destination:
+
+![2025-03-0122-32-34-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/9a5b24cf-6ac5-4a90-9aec-33201e65470a)
+
+2. Choose which landmarks/point of interests you want to learn more about
+
+![2025-03-0122-32-34-ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/2cb695d5-f352-40cb-a025-ebf6dbb3c42d)
+
+3. Listen about the historical impact and description of the landmark/point of interests
+
+![2025-03-0122-32-34-ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/430db20f-4e26-49bf-9757-fc549f9ee701)
+
 ## Installation & Setup
 
 ### Prerequisites
 
 - Node.js (v14 or later)
-- npm or yarn package manager
+- npm
 - API keys for mapping services (if applicable)
 
 ### Steps
@@ -133,16 +147,12 @@ The frontend interacts with the backend Flask API to fetch route details and aud
 
    ```bash
    npm run build
-   # or
-   yarn build
    ```
 
 2. **Start the production server:**
 
    ```bash
    npm start
-   # or
-   yarn start
    ```
 
    Ensure that the environment variables are set appropriately for production.
