@@ -42,8 +42,6 @@ The Route Planner Frontend is a web application that enables users to calculate 
 
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. **Set up environment variables:**
@@ -58,8 +56,6 @@ The Route Planner Frontend is a web application that enables users to calculate 
 
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
    The application will be available at `http://localhost:3000/`.
