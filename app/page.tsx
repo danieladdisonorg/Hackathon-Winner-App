@@ -51,6 +51,10 @@ export default function MapRoute() {
   /* -------------------------------------------------------------------------- */
 
   useEffect(() => {
+    pointsOfInterest.map(point => fetchAudio(point));
+  }, [pointsOfInterest])
+
+  useEffect(() => {
     const loader = new Loader({
       apiKey: GOOGLE_MAPS_API_KEY,
       version: "weekly",
@@ -99,6 +103,26 @@ export default function MapRoute() {
   /* -------------------------------------------------------------------------- */
   /*                                Helper Functions                             */
   /* -------------------------------------------------------------------------- */
+
+//replace sapce with underscore
+
+  const nameParser = (poi: any) => {
+    console.log(poi.name);
+    return poi.name.split(" ").join("_");
+  }
+
+  const fetchAudio = async (place: string) => {
+    let poi = nameParser(place)
+    await fetch(`http://127.0.0.1:3100/get-location-info?place=${poi}`)
+    .then(response => response)
+    .then(data => console.log(data.json()))
+    // .then(blob => {
+    //   const audioUrl = URL.createObjectURL(blob);
+    //   const audioElement = new Audio(audioUrl);
+    //   audioElement.play();
+    // });
+  }
+
 
   // Extracts a detailed list of LatLng points from the DirectionsRoute.
   function getRoutePathPoints(route: google.maps.DirectionsRoute): google.maps.LatLng[] {
