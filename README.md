@@ -1,8 +1,12 @@
-# Route Planner Frontend
+
+![CB32CD93-F420-40D4-9978-47EDD26C8176_1_105_c](https://github.com/user-attachments/assets/9862d9e9-dd87-4a28-97c8-ab60d8ff478a)
+
+# POINT (Point Of INterest Tourguide)
+Hackathon Winner | Most Creative Track | TechNYU
 
 ## Overview
 
-The Route Planner Frontend is a web application that enables users to calculate routes between a starting point and a destination, displaying points of interest (POIs) along the way. Users can also listen to audio descriptions of select locations.
+[POINT](https://devpost.com/software/wandervoice) is a web application that enables users to calculate routes between a starting point and a destination, displaying points of interest (POIs) along the way. Users can also listen to audio descriptions of select locations.
 
 ## Features
 
