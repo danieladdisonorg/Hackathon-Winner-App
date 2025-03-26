@@ -21,8 +21,8 @@ Hackathon Winner | Most Creative Track | TechNYU
 - **Frontend Framework:** Next.js (React-based framework)
 - **TypeScript:** For type-safe JavaScript development
 - **Styling:** Tailwind CSS
-- **Mapping Library:** (Specify the mapping service used, e.g., Google Maps API or Mapbox)
-- **State Management:** (Specify if using Context API, Redux, or other state management libraries)
+- **Mapping Library:** (Google Maps API)
+- **Text-to-speech:** (Eleven Labs)
 - **API Integration:** Communication with the backend Flask API
 
 ## Demo
