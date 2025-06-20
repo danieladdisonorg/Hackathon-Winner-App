@@ -1,7 +1,5 @@
 
-![CB32CD93-F420-40D4-9978-47EDD26C8176_1_105_c](https://github.com/user-attachments/assets/9862d9e9-dd87-4a28-97c8-ab60d8ff478a)
-
-# POINT (Point Of INterest Tourguide)
+# POINT (Point Of Interest Tourguide)
 Hackathon Winner | Most Creative Track | TechNYU
 
 ## Overview
@@ -52,8 +50,8 @@ Hackathon Winner | Most Creative Track | TechNYU
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/craftingweb/Buildathon.git
-   cd Buildathon
+   git clone https://github.com/danieladdisonorg/Hackathon-Winner-App.git
+   cd Hackathon-Winner-App
    ```
 
 2. **Install dependencies:**
